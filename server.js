@@ -27,8 +27,8 @@ connectDB();
 
 // ── Security middleware ────────────────────────────────────
 app.use(helmet({
-  crossOriginEmbedderPolicy: false,   // allow frontend assets
-  contentSecurityPolicy: IS_PROD ? undefined : false
+  crossOriginEmbedderPolicy: false,
+  contentSecurityPolicy: false        // inline scripts allowed (SPA)
 }));
 app.use(compression());
 app.use(morgan(IS_PROD ? 'combined' : 'dev', {
@@ -81,7 +81,7 @@ app.get('*', (req, res) => {
 app.use(errorHandler);
 
 // ── Start ──────────────────────────────────────────────────
-app.listen(PORT,"0.0.0.0", () => {
+app.listen(PORT, () => {
   logger.info(`🚀  FixIt API v3.0  →  http://localhost:${PORT}`);
   logger.info(`🌍  Environment    :  ${process.env.NODE_ENV || 'development'}`);
   logger.info(`🔒  Admin phone    :  ${process.env.ADMIN_PHONE || '(not set)'}`);
