@@ -81,7 +81,7 @@ app.get('*', (req, res) => {
 app.use(errorHandler);
 
 // ── Start ──────────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0", () => {
   logger.info(`🚀  FixIt API v3.0  →  http://localhost:${PORT}`);
   logger.info(`🌍  Environment    :  ${process.env.NODE_ENV || 'development'}`);
   logger.info(`🔒  Admin phone    :  ${process.env.ADMIN_PHONE || '(not set)'}`);
