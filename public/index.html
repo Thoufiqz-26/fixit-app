@@ -482,7 +482,11 @@ const apiPut  = (path, body, role) => apiFetch('PUT',    path, body, role);
 /* ════ API CHECK ════ */
 async function checkApi() {
   try {
-    await fetch(API + '/api/health');
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 5000); // 5s max
+    const r = await fetch(API + '/api/health', { signal: controller.signal });
+    clearTimeout(tid);
+    if (!r.ok) throw new Error('not ok');
     isLive = true;
     document.getElementById('hero-section').insertAdjacentHTML('afterend',
       `<div style="max-width:540px;width:100%;padding:8px 20px 0">
@@ -1303,10 +1307,14 @@ function escHtml(s) {
 
 /* ════ INIT ════ */
 (async () => {
+  // Render home immediately — never block on network
   initLocation();
+  renderHome();
+  // Then load API status + auth in background
   await checkApi();
   await initUserAuth();
   await initMechanicAuth();
+  // Re-render once auth state is known
   renderHome();
 })();
 </script>
