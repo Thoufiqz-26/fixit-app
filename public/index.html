@@ -1306,15 +1306,16 @@ function escHtml(s) {
 });
 
 /* ════ INIT ════ */
-/* ════ INIT ════ */
 (async () => {
+  // Render home immediately — never block on network
   initLocation();
-  renderHome(); // render immediately — don't wait for network
+  renderHome();
+  // Then load API status + auth in background
   await checkApi();
   await initUserAuth();
   await initMechanicAuth();
-  renderHome(); // re-render once auth is known
-})();
+  // Re-render once auth state is known
+  renderHome();
 })();
 </script>
 </body>
