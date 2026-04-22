@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: fixit-app
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ADMIN_PHONE
+        value: 7013243327
+      - key: ADMIN_PASSWORD
+        value: Admin@123
+      - key: LOG_LEVEL
+        value: info
