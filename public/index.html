@@ -467,12 +467,17 @@ function getHeaders(role = 'auto') {
 }
 
 async function apiFetch(method, path, body, role = 'auto') {
-  const opts = { method, headers: getHeaders(role) };
-  if (body) opts.body = JSON.stringify(body);
-  const r = await fetch(API + path, opts);
-  const data = await r.json().catch(() => ({}));
-  if (!r.ok) throw Object.assign(new Error(data.error || 'Request failed'), { status: r.status, data });
-  return data;
+  const controller = new AbortController();
+  const tid = setTimeout(() => controller.abort(), 8000);
+  try {
+    const opts = { method, headers: getHeaders(role), signal: controller.signal };
+    if (body) opts.body = JSON.stringify(body);
+    const r = await fetch(API + path, opts);
+    clearTimeout(tid);
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(data.error || 'Request failed'), { status: r.status, data });
+    return data;
+  } catch (err) { clearTimeout(tid); throw err; }
 }
 
 const apiGet  = (path, role)       => apiFetch('GET',    path, null, role);
@@ -1307,15 +1312,17 @@ function escHtml(s) {
 
 /* ════ INIT ════ */
 (async () => {
-  // Render home immediately — never block on network
   initLocation();
-  renderHome();
-  // Then load API status + auth in background
-  await checkApi();
-  await initUserAuth();
-  await initMechanicAuth();
-  // Re-render once auth state is known
-  renderHome();
+  renderHome();                  // show UI immediately
+  await Promise.race([           // never wait more than 6s total for startup
+    (async () => {
+      await checkApi();
+      await initUserAuth();
+      await initMechanicAuth();
+    })(),
+    new Promise(r => setTimeout(r, 6000))
+  ]);
+  renderHome();                  // re-render with auth state
 })();
 </script>
 </body>
