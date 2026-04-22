@@ -1311,18 +1311,13 @@ function escHtml(s) {
 });
 
 /* ════ INIT ════ */
+initLocation();
+renderHome();
 (async () => {
-  initLocation();
-  renderHome();                  // show UI immediately
-  await Promise.race([           // never wait more than 6s total for startup
-    (async () => {
-      await checkApi();
-      await initUserAuth();
-      await initMechanicAuth();
-    })(),
-    new Promise(r => setTimeout(r, 6000))
-  ]);
-  renderHome();                  // re-render with auth state
+  await checkApi();
+  await initUserAuth();
+  await initMechanicAuth();
+  renderHome();
 })();
 </script>
 </body>
