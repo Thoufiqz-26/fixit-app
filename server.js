@@ -19,6 +19,7 @@ const adminRoutes    = require('./routes/admin');
 const bookingRoutes  = require('./routes/booking');
 
 const app    = express();
+app.set('trust proxy', 1); 
 const PORT   = process.env.PORT || 5000;
 const IS_PROD = process.env.NODE_ENV === 'production';
 
