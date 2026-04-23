@@ -18,12 +18,14 @@ const authLimiter = rateLimit({
   message: { error: 'Too many auth attempts. Please wait before trying again.' }
 });
 
-/** OTP send — 5 req / 60 min */
+/** OTP send — limit per phone number, not IP */
 const otpLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  // ✅ Key by phone number instead of IP
+  keyGenerator: (req) => req.body.phone || req.body.email || req.ip,
   message: { error: 'Too many OTP requests. Try again in 1 hour.' }
 });
 
